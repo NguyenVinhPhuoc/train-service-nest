@@ -9,7 +9,7 @@ import { TrainService } from './train.service';
 export class TrainController {
   constructor(private readonly trainService: TrainService) {}
 
-  @MessagePattern('get_buses_by_partner')
+  @MessagePattern('get_trains_by_partner')
   async getTrainsByPartner(partnerId: string) {
     try {
       const trains = await this.trainService.getTrainByPartner(partnerId);
