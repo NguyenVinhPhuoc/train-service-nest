@@ -86,7 +86,7 @@ export class TrainController {
   async postTrain(@Body() trainDTO: TrainDTO) {
     try {
       const train = await this.trainService.registerTrain(trainDTO);
-      return train;
+      return { train };
     } catch (error) {
       return HttpErrorByCode;
     }
