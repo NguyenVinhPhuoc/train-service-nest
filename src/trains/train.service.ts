@@ -57,6 +57,7 @@ export class TrainService {
           model: Train,
         },
       );
+      return trains;
     } catch (error) {
       throw DatabaseError;
     }

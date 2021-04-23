@@ -6,10 +6,10 @@ import { Journey } from './journey.model';
 export class JourneysService {
   constructor(private sequelize: Sequelize) {}
 
-  async getJourneysByBus(trainId: string) {
+  async getJourneysByTrain(trainId: string) {
     try {
       const journeys = await this.sequelize.query(
-        'SP_GetJourneysByBus @trainId=:trainId',
+        'SP_GetJourneysByTrain @trainId=:trainId',
         {
           type: QueryTypes.SELECT,
           replacements: { trainId },
