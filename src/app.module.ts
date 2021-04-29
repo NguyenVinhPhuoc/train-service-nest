@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { TrainModule } from './trains/train.module';
-import { HealthController } from './health/health.controller';
 import { HealthModule } from './health/health.module';
 import { JourneysModule } from './journeys/journeys.module';
+import { TrainController } from './trains/train.controller';
+import { TrainService } from './trains/train.service';
+import { SchedulesModule } from './schedules/schedules.module';
 
 @Module({
   imports: [
@@ -21,8 +21,9 @@ import { JourneysModule } from './journeys/journeys.module';
     HealthModule,
     TrainModule,
     JourneysModule,
+    SchedulesModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [TrainController],
+  providers: [TrainService],
 })
 export class AppModule {}

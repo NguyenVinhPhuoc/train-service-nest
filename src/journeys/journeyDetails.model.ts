@@ -1,4 +1,6 @@
-export class JourneyDetails {
+import { Model } from 'sequelize';
+
+export class JourneyDetails extends Model {
   id: string;
   orderNumber: number;
   description: string;

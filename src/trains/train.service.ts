@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseError } from 'sequelize';
 import { QueryTypes } from 'sequelize';
 import { Sequelize } from 'sequelize';
-import { StationDTO } from 'src/dtos/station.dto';
+import { RegisterStationDTO } from 'src/dtos/station.dto';
 import { TrainDTO } from 'src/dtos/train.dto';
 import { Train } from './train.model';
 
@@ -25,10 +25,10 @@ export class TrainService {
       throw DatabaseError;
     }
   }
-  async getTrainByPartner(partnerId: string) {
+  async getTrainsByPartner(partnerId: string) {
     try {
-      const train = await this.sequelize.query(
-        `SP_GetTrainByPartner @partnerId=:partnerId`,
+      const trains = await this.sequelize.query(
+        `SP_GetTrainsByPartner @partnerId=:partnerId`,
         {
           type: QueryTypes.SELECT,
           replacements: { partnerId },
@@ -36,13 +36,13 @@ export class TrainService {
           model: Train,
         },
       );
-      return train[0];
+      return trains;
     } catch (error) {
       throw DatabaseError;
     }
   }
 
-  async getTrainsByStation(stationDTO: StationDTO) {
+  async getTrainsByStation(stationDTO: RegisterStationDTO) {
     try {
       const trains = await this.sequelize.query(
         `SP_GetTrainsByStation @district=:district, @city=:city, @country=:country`,

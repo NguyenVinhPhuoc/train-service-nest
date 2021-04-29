@@ -4,8 +4,6 @@ import {
   Get,
   HttpStatus,
   Logger,
-  Param,
-  Post,
   Query,
 } from '@nestjs/common';
 import {
@@ -14,8 +12,7 @@ import {
   Payload,
   RmqContext,
 } from '@nestjs/microservices';
-import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
-import { StationDTO } from 'src/dtos/station.dto';
+import { RegisterStationDTO } from 'src/dtos/station.dto';
 import { TrainDTO } from 'src/dtos/train.dto';
 import { TrainService } from './train.service';
 
@@ -24,71 +21,56 @@ export class TrainController {
   private readonly logger = new Logger('TrainController');
   constructor(private readonly trainService: TrainService) {}
 
-  @MessagePattern('get_trains_by_partner')
-  async getTrainsByPartner(
-    @Payload() partnerId: string,
-    @Ctx() context: RmqContext,
-  ) {
-    const channel = context.getChannelRef();
-    const originalMessage = context.getMessage();
-    try {
-      const trains = await this.trainService.getTrainByPartner(partnerId);
-      return { trains };
-    } catch (error) {
-      this.logger.error(error.message);
-      throw HttpStatus.SERVICE_UNAVAILABLE;
-    } finally {
-      channel.ack(originalMessage);
-    }
-  }
-
-  @MessagePattern('get_trains_by_station')
-  async getBusesByStation(
-    @Payload() departureStationDTO: StationDTO,
-    @Ctx() context: RmqContext,
-  ) {
-    const channel = context.getChannelRef();
-    const originalMessage = context.getMessage();
-    try {
-      const trains = await this.trainService.getTrainsByStation(
-        departureStationDTO,
-      );
-      return { trains };
-    } catch (error) {
-      this.logger.error(error.message);
-      throw HttpStatus.SERVICE_UNAVAILABLE;
-    } finally {
-      channel.ack(originalMessage);
-    }
-  }
-
-  // @Get('station')
-  // async getTrainsByStation(@Query() stationDTO: StationDTO) {
+  // @MessagePattern('get_trains_by_partner')
+  // async getTrainsByPartner(
+  //   @Payload() partnerId: string,
+  //   @Ctx() context: RmqContext,
+  // ) {
+  //   const channel = context.getChannelRef();
+  //   const originalMessage = context.getMessage();
   //   try {
-  //     const trains = await this.trainService.getTrainsByStation(stationDTO);
+  //     const trains = await this.trainService.getTrainsByPartner(partnerId);
   //     return { trains };
   //   } catch (error) {
-  //     throw HttpErrorByCode;
+  //     this.logger.error(error.message);
+  //     throw HttpStatus.SERVICE_UNAVAILABLE;
+  //   } finally {
+  //     channel.ack(originalMessage);
   //   }
   // }
 
-  // @Get(':trainId')
-  // async getTrainById(@Param('trainId') trainId: string) {
+  // @MessagePattern('get_trains_by_station')
+  // async getBusesByStation(
+  //   @Payload() departureStationDTO: RegisterStationDTO,
+  //   @Ctx() context: RmqContext,
+  // ) {
+  //   const channel = context.getChannelRef();
+  //   const originalMessage = context.getMessage();
   //   try {
-  //     const train = await this.trainService.getTrainById(trainId);
-  //     return train;
+  //     const trains = await this.trainService.getTrainsByStation(
+  //       departureStationDTO,
+  //     );
+  //     return { trains };
   //   } catch (error) {
-  //     return HttpErrorByCode;
+  //     this.logger.error(error.message);
+  //     throw HttpStatus.SERVICE_UNAVAILABLE;
+  //   } finally {
+  //     channel.ack(originalMessage);
   //   }
   // }
 
-  @Post()
-  async postTrain(@Body() trainDTO: TrainDTO) {
+  @MessagePattern('post_train')
+  async postTrain(@Payload() trainDTO: TrainDTO, @Ctx() context: RmqContext) {
+    const channel = context.getChannelRef();
+    const originalMessage = context.getMessage();
     try {
       const train = await this.trainService.registerTrain(trainDTO);
-      return { train };
+      return { vehicle: train };
     } catch (error) {
-      return HttpErrorByCode;
+      this.logger.error(error.message);
+      throw HttpStatus.SERVICE_UNAVAILABLE;
+    } finally {
+      channel.ack(originalMessage);
     }
   }
 }

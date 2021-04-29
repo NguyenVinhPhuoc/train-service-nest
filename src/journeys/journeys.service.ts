@@ -1,57 +1,125 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Sequelize, QueryTypes, DatabaseError } from 'sequelize';
+import { RegisterStationDTO } from 'src/dtos/station.dto';
 import { Journey } from './journey.model';
+import { JourneyDetails } from './journeyDetails.model';
 
 @Injectable()
 export class JourneysService {
+  private readonly logger = new Logger('JourneysService');
   constructor(private sequelize: Sequelize) {}
 
-  async getJourneysByTrain(trainId: string) {
+  // async getJourneysByTrain(trainId: string): Promise<any> {
+  //   try {
+  //     const journeys = await this.sequelize.query(
+  //       'SP_GetJourneysByTrain @trainId=:trainId',
+  //       {
+  //         type: QueryTypes.SELECT,
+  //         replacements: { trainId },
+  //         raw: true,
+  //         mapToModel: true,
+  //         model: Journey,
+  //       },
+  //     );
+  //     return journeys;
+  //   } catch (error) {
+  //     this.logger.error(error.message);
+  //     throw new DatabaseError(error);
+  //   }
+  // }
+
+  async addJourney(vehicleId: string): Promise<Journey> {
     try {
-      const journeys = await this.sequelize.query(
-        'SP_GetJourneysByTrain @trainId=:trainId',
+      const inserted = await this.sequelize.query(
+        'SP_AddJourney @trainId=:trainId',
         {
           type: QueryTypes.SELECT,
-          replacements: { trainId },
+          replacements: { trainId: vehicleId },
+          raw: true,
           mapToModel: true,
           model: Journey,
         },
       );
-      return journeys;
+      return inserted[0];
     } catch (error) {
-      throw DatabaseError;
+      this.logger.error(error.message);
+      throw new DatabaseError(error);
     }
   }
 
-  async registerJourney(trainId: string) {
-    try {
-      const journey = await this.sequelize.query(
-        'SP_RegisterJourney @trainId=:trainId',
-        {
-          type: QueryTypes.SELECT,
-          replacements: { trainId },
-          mapToModel: true,
-          model: Journey,
-        },
-      );
-      return journey[0];
-    } catch (error) {
-      throw DatabaseError;
-    }
-  }
+  // async activateJourney(journeyId: string): Promise<Journey[]> {
+  //   try {
+  //     const journeys = await this.sequelize.query(
+  //       'SP_ActivateJourney @journeyId=:journeyId',
+  //       {
+  //         type: QueryTypes.SELECT,
+  //         replacements: { journeyId },
+  //         raw: true,
+  //         mapToModel: true,
+  //         model: Journey,
+  //       },
+  //     );
+  //     return journeys;
+  //   } catch (error) {
+  //     this.logger.error(error.message);
+  //     throw new DatabaseError(error);
+  //   }
+  // }
 
-  async activateJourney(journeyId: string) {
+  // async getJourneyDetails(journeyId: string): Promise<JourneyDetails[]> {
+  //   try {
+  //     const stations = await this.sequelize.query(
+  //       'SP_GetJourneyDetails @journeyId=:journeyId',
+  //       {
+  //         type: QueryTypes.SELECT,
+  //         replacements: { journeyId },
+  //         raw: true,
+  //         mapToModel: true,
+  //         model: JourneyDetails,
+  //       },
+  //     );
+  //     return stations;
+  //   } catch (error) {
+  //     this.logger.error(error.message);
+  //     throw new DatabaseError(error);
+  //   }
+  // }
+
+  async addJourneyDetail(
+    journeyId: string,
+    stationDTOs: RegisterStationDTO[],
+  ): Promise<JourneyDetails[]> {
     try {
-      const result = await this.sequelize.query(
-        'SP_ActivateJourney @journeyId=:journeyId',
-        {
-          type: QueryTypes.UPDATE,
-          replacements: { journeyId },
-        },
+      const insertedStations = await Promise.all(
+        stationDTOs.map(async (station, index) => {
+          const inserted = await this.sequelize.query(
+            'SP_AddJourneyDetails @journeyId=:journeyId, ' +
+              '@orderNumber=:orderNumber, @description=:description, ' +
+              '@placeId=:placeId, @district=:district, @city=:city, ' +
+              '@country=:country',
+            {
+              type: QueryTypes.SELECT,
+              replacements: {
+                journeyId,
+                description: station.description,
+                placeId: station.placeId,
+                district: station.district,
+                city: station.city,
+                country: station.country,
+                orderNumber: index,
+              },
+              mapToModel: true,
+              model: JourneyDetails,
+              raw: true,
+            },
+          );
+          return inserted[0];
+        }),
       );
-      return !!result[1];
+      return insertedStations;
     } catch (error) {
-      throw DatabaseError;
+      this.logger.error(error.message);
+      throw new DatabaseError(error);
     }
   }
 }
