@@ -5,5 +5,4 @@ export class AddScheduleDTO {
   travelTime: string;
   gap: string;
   journeyId: string;
-  numberOfVehicles: number;
 }

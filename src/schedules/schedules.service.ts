@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseError, QueryTypes, Sequelize } from 'sequelize';
 import { AddScheduleDTO } from 'src/dtos/add-schedule.dto';
+import { GetSchedulesByConditionsDTO } from 'src/dtos/get-schedules-by-conds.dto';
+import { FilteredSchedule } from 'src/models/filtered-schedule.model';
 import { ScheduleDetails } from 'src/models/schedule-details.model';
 import { Schedule } from 'src/models/schedule.model';
 
@@ -17,7 +19,7 @@ export class SchedulesService {
       const details = await this.sequelize.query(
         'SP_AddSchedule @date=:date, @startTime=:startTime, ' +
           '@endTime=:endTime, @travelTime=:travelTime, @gap=:gap, ' +
-          '@numberOfVehicles=:numberOfVehicles, @journeyId=:journeyId',
+          '@journeyId=:journeyId',
         {
           type: QueryTypes.SELECT,
           replacements: {
@@ -26,7 +28,6 @@ export class SchedulesService {
             endTime: addScheduleDTO.endTime,
             travelTime: addScheduleDTO.travelTime,
             gap: addScheduleDTO.gap,
-            numberOfVehicles: addScheduleDTO.numberOfVehicles,
             journeyId: addScheduleDTO.journeyId,
           },
           raw: true,
@@ -54,6 +55,32 @@ export class SchedulesService {
         },
       );
       return schedule[0];
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new DatabaseError(error);
+    }
+  }
+
+  async getSchedulesByConditions(
+    getSchedulesByConditionsDTO: GetSchedulesByConditionsDTO,
+  ): Promise<FilteredSchedule[]> {
+    try {
+      const schedules = await this.sequelize.query(
+        'SP_GetSchedulesByConditions @depDistrict=:depDistrict, @depCity=:depCity, ' +
+          '@depCountry=:depCountry, @desDistrict=:desDistrict, ' +
+          '@desCity=:desCity, @desCountry=:desCountry, @date=:date, ' +
+          '@pickUpTime=:pickUpTime, @numberOfPax=:numberOfPax',
+        {
+          type: QueryTypes.SELECT,
+          replacements: {
+            ...getSchedulesByConditionsDTO,
+          },
+          raw: true,
+          mapToModel: true,
+          model: FilteredSchedule,
+        },
+      );
+      return schedules;
     } catch (error) {
       this.logger.error(error.message);
       throw new DatabaseError(error);

@@ -12,14 +12,20 @@ import {
   Payload,
   RmqContext,
 } from '@nestjs/microservices';
+import { query } from 'express';
+import { GetSchedulesByConditionsDTO } from 'src/dtos/get-schedules-by-conds.dto';
 import { RegisterStationDTO } from 'src/dtos/station.dto';
 import { TrainDTO } from 'src/dtos/train.dto';
+import { SchedulesService } from 'src/schedules/schedules.service';
 import { TrainService } from './train.service';
 
 @Controller('Trains')
 export class TrainController {
   private readonly logger = new Logger('TrainController');
-  constructor(private readonly trainService: TrainService) {}
+  constructor(
+    private readonly trainService: TrainService,
+    private schedulesService: SchedulesService,
+  ) {}
 
   // @MessagePattern('get_trains_by_partner')
   // async getTrainsByPartner(
@@ -71,6 +77,29 @@ export class TrainController {
       throw HttpStatus.SERVICE_UNAVAILABLE;
     } finally {
       channel.ack(originalMessage);
+    }
+  }
+
+  @Get('trainsfilter')
+  async getTrainByFilter(@Body() schedulesDTO: GetSchedulesByConditionsDTO) {
+    try {
+      const schedules = await this.schedulesService.getSchedulesByConditions(
+        schedulesDTO,
+      );
+      let trainId = [];
+      schedules.forEach(async (schedule) => {
+        try {
+          trainId = await this.trainService.getTrainByJourney(
+            schedule.journeyId,
+          );
+        } catch (error) {
+          this.logger.error(error.message);
+        }
+      });
+      return { trainId, ...schedules };
+    } catch (error) {
+      this.logger.error(error.message);
+      throw HttpStatus.SERVICE_UNAVAILABLE;
     }
   }
 }

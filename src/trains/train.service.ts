@@ -84,4 +84,22 @@ export class TrainService {
       throw DatabaseError;
     }
   }
+
+  async getTrainByJourney(journeyId: string): Promise<Train[]> {
+    try {
+      const trains = await this.sequelize.query(
+        'SP_GetTrainsByJourney @journeyId=:journeyId',
+        {
+          type: QueryTypes.SELECT,
+          replacements: { journeyId },
+          raw: true,
+          mapToModel: true,
+          model: Train,
+        },
+      );
+      return trains;
+    } catch (error) {
+      throw new DatabaseError(error);
+    }
+  }
 }
