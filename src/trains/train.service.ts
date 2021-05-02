@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseError } from 'sequelize';
 import { QueryTypes } from 'sequelize';
 import { Sequelize } from 'sequelize';
-import { RegisterStationDTO } from 'src/dtos/station.dto';
 import { TrainDTO } from 'src/dtos/train.dto';
 import { Train } from '../models/train.model';
 
@@ -45,6 +44,7 @@ export class TrainService {
             ticketPrice: trainDTO.ticketPrice,
             partnerId: trainDTO.partnerId,
           },
+          raw: true,
         },
       );
       return train[0];
