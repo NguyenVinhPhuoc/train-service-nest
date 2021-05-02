@@ -7,5 +7,4 @@ export class GetSchedulesByConditionsDTO {
   desCountry: string;
   date: string;
   pickUpTime: string;
-  numberOfPax: number;
 }

@@ -1,32 +1,32 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Sequelize, QueryTypes, DatabaseError } from 'sequelize';
 import { RegisterStationDTO } from 'src/dtos/station.dto';
-import { Journey } from './journey.model';
-import { JourneyDetails } from './journeyDetails.model';
+import { Journey } from '../models/journey.model';
+import { JourneyDetails } from '../models/journeyDetails.model';
 
 @Injectable()
 export class JourneysService {
   private readonly logger = new Logger('JourneysService');
   constructor(private sequelize: Sequelize) {}
 
-  // async getJourneysByTrain(trainId: string): Promise<any> {
-  //   try {
-  //     const journeys = await this.sequelize.query(
-  //       'SP_GetJourneysByTrain @trainId=:trainId',
-  //       {
-  //         type: QueryTypes.SELECT,
-  //         replacements: { trainId },
-  //         raw: true,
-  //         mapToModel: true,
-  //         model: Journey,
-  //       },
-  //     );
-  //     return journeys;
-  //   } catch (error) {
-  //     this.logger.error(error.message);
-  //     throw new DatabaseError(error);
-  //   }
-  // }
+  async getJourneysByTrain(trainId: string): Promise<any> {
+    try {
+      const journeys = await this.sequelize.query(
+        'SP_GetJourneysByTrain @trainId=:trainId',
+        {
+          type: QueryTypes.SELECT,
+          replacements: { trainId },
+          raw: true,
+          mapToModel: true,
+          model: Journey,
+        },
+      );
+      return journeys;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new DatabaseError(error);
+    }
+  }
 
   async addJourney(vehicleId: string): Promise<Journey> {
     try {
@@ -47,43 +47,45 @@ export class JourneysService {
     }
   }
 
-  // async activateJourney(journeyId: string): Promise<Journey[]> {
-  //   try {
-  //     const journeys = await this.sequelize.query(
-  //       'SP_ActivateJourney @journeyId=:journeyId',
-  //       {
-  //         type: QueryTypes.SELECT,
-  //         replacements: { journeyId },
-  //         raw: true,
-  //         mapToModel: true,
-  //         model: Journey,
-  //       },
-  //     );
-  //     return journeys;
-  //   } catch (error) {
-  //     this.logger.error(error.message);
-  //     throw new DatabaseError(error);
-  //   }
-  // }
+  async activateJourney(journeyId: string): Promise<Journey[]> {
+    try {
+      const journeys = await this.sequelize.query(
+        'SP_ActivateJourney @journeyId=:journeyId',
+        {
+          type: QueryTypes.SELECT,
+          replacements: { journeyId },
+          raw: true,
+          mapToModel: true,
+          model: Journey,
+        },
+      );
+      return journeys;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new DatabaseError(error);
+    }
+  }
 
-  // async getJourneyDetails(journeyId: string): Promise<JourneyDetails[]> {
-  //   try {
-  //     const stations = await this.sequelize.query(
-  //       'SP_GetJourneyDetails @journeyId=:journeyId',
-  //       {
-  //         type: QueryTypes.SELECT,
-  //         replacements: { journeyId },
-  //         raw: true,
-  //         mapToModel: true,
-  //         model: JourneyDetails,
-  //       },
-  //     );
-  //     return stations;
-  //   } catch (error) {
-  //     this.logger.error(error.message);
-  //     throw new DatabaseError(error);
-  //   }
-  // }
+  async getJourneyDetailsByJourney(
+    journeyId: string,
+  ): Promise<JourneyDetails[]> {
+    try {
+      const stations = await this.sequelize.query(
+        'SP_GetJourneyDetailsByJourney @journeyId=:journeyId',
+        {
+          type: QueryTypes.SELECT,
+          replacements: { journeyId },
+          raw: true,
+          mapToModel: true,
+          model: JourneyDetails,
+        },
+      );
+      return stations;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new DatabaseError(error);
+    }
+  }
 
   async addJourneyDetail(
     journeyId: string,

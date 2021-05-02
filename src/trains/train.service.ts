@@ -1,30 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseError } from 'sequelize';
 import { QueryTypes } from 'sequelize';
 import { Sequelize } from 'sequelize';
 import { RegisterStationDTO } from 'src/dtos/station.dto';
 import { TrainDTO } from 'src/dtos/train.dto';
-import { Train } from './train.model';
+import { Train } from '../models/train.model';
 
 @Injectable()
 export class TrainService {
+  private readonly logger = new Logger('TrainsService');
+
   constructor(private sequelize: Sequelize) {}
-  async getTrainById(trainId: string) {
-    try {
-      const train = await this.sequelize.query(
-        `SP_GetTrainById @trainId=:trainId`,
-        {
-          type: QueryTypes.SELECT,
-          replacements: { trainId },
-          mapToModel: true,
-          model: Train,
-        },
-      );
-      return train[0];
-    } catch (error) {
-      throw DatabaseError;
-    }
-  }
+
   async getTrainsByPartner(partnerId: string) {
     try {
       const trains = await this.sequelize.query(
@@ -34,36 +21,17 @@ export class TrainService {
           replacements: { partnerId },
           mapToModel: true,
           model: Train,
+          raw: true,
         },
       );
       return trains;
     } catch (error) {
+      this.logger.error(error.message);
       throw DatabaseError;
     }
   }
 
-  async getTrainsByStation(stationDTO: RegisterStationDTO) {
-    try {
-      const trains = await this.sequelize.query(
-        `SP_GetTrainsByStation @district=:district, @city=:city, @country=:country`,
-        {
-          replacements: {
-            district: stationDTO.district,
-            city: stationDTO.city,
-            country: stationDTO.country,
-          },
-          type: QueryTypes.SELECT,
-          mapToModel: true,
-          model: Train,
-        },
-      );
-      return trains;
-    } catch (error) {
-      throw DatabaseError;
-    }
-  }
-
-  async registerTrain(trainDTO: TrainDTO) {
+  async registerTrain(trainDTO: TrainDTO): Promise<Train> {
     try {
       const train = await this.sequelize.query(
         `SP_RegisterTrain @name=:name, @photoUrl=:photoUrl, @ticketPrice=:ticketPrice, @partnerId=:partnerId`,
@@ -81,14 +49,15 @@ export class TrainService {
       );
       return train[0];
     } catch (error) {
+      this.logger.error(error.message);
       throw DatabaseError;
     }
   }
 
-  async getTrainByJourney(journeyId: string): Promise<Train[]> {
+  async getTrainByJourney(journeyId: string): Promise<Train> {
     try {
-      const trains = await this.sequelize.query(
-        'SP_GetTrainsByJourney @journeyId=:journeyId',
+      const train = await this.sequelize.query(
+        'SP_GetTrainByJourney @journeyId=:journeyId',
         {
           type: QueryTypes.SELECT,
           replacements: { journeyId },
@@ -97,7 +66,7 @@ export class TrainService {
           model: Train,
         },
       );
-      return trains;
+      return train[0];
     } catch (error) {
       throw new DatabaseError(error);
     }

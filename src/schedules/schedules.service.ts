@@ -12,6 +12,28 @@ export class SchedulesService {
 
   constructor(private sequelize: Sequelize) {}
 
+  async getScheduleByJourneyAndDate(
+    journeyId: string,
+    date: string,
+  ): Promise<Schedule> {
+    try {
+      const schedules = await this.sequelize.query(
+        'SP_GetScheduleByJourneyAndDate @journeyId=:journeyId, @date=:date',
+        {
+          type: QueryTypes.SELECT,
+          replacements: { journeyId, date },
+          raw: true,
+          mapToModel: true,
+          model: Schedule,
+        },
+      );
+      return schedules[0];
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new DatabaseError(error);
+    }
+  }
+
   async addSchedule(
     addScheduleDTO: AddScheduleDTO,
   ): Promise<ScheduleDetails[]> {
@@ -69,7 +91,7 @@ export class SchedulesService {
         'SP_GetSchedulesByConditions @depDistrict=:depDistrict, @depCity=:depCity, ' +
           '@depCountry=:depCountry, @desDistrict=:desDistrict, ' +
           '@desCity=:desCity, @desCountry=:desCountry, @date=:date, ' +
-          '@pickUpTime=:pickUpTime, @numberOfPax=:numberOfPax',
+          '@pickUpTime=:pickUpTime',
         {
           type: QueryTypes.SELECT,
           replacements: {
@@ -81,6 +103,27 @@ export class SchedulesService {
         },
       );
       return schedules;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new DatabaseError(error);
+    }
+  }
+
+  async getScheduleDetailsBySchedule(
+    scheduleId: string,
+  ): Promise<ScheduleDetails[]> {
+    try {
+      const scheduleDetails = await this.sequelize.query(
+        'SP_GetScheduleDetailsBySchedule @scheduleId=:scheduleId',
+        {
+          type: QueryTypes.SELECT,
+          replacements: { scheduleId },
+          raw: true,
+          mapToModel: true,
+          model: ScheduleDetails,
+        },
+      );
+      return scheduleDetails;
     } catch (error) {
       this.logger.error(error.message);
       throw new DatabaseError(error);

@@ -6,6 +6,8 @@ import { JourneysModule } from './journeys/journeys.module';
 import { TrainController } from './trains/train.controller';
 import { TrainService } from './trains/train.service';
 import { SchedulesModule } from './schedules/schedules.module';
+import { SchedulesService } from './schedules/schedules.service';
+import { JourneysService } from './journeys/journeys.service';
 
 @Module({
   imports: [
@@ -24,6 +26,6 @@ import { SchedulesModule } from './schedules/schedules.module';
     SchedulesModule,
   ],
   controllers: [TrainController],
-  providers: [TrainService],
+  providers: [TrainService, SchedulesService, JourneysService],
 })
 export class AppModule {}

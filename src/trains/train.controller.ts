@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
   HttpStatus,
   Logger,
   Query,
@@ -12,10 +13,9 @@ import {
   Payload,
   RmqContext,
 } from '@nestjs/microservices';
-import { query } from 'express';
 import { GetSchedulesByConditionsDTO } from 'src/dtos/get-schedules-by-conds.dto';
-import { RegisterStationDTO } from 'src/dtos/station.dto';
 import { TrainDTO } from 'src/dtos/train.dto';
+import { JourneysService } from 'src/journeys/journeys.service';
 import { SchedulesService } from 'src/schedules/schedules.service';
 import { TrainService } from './train.service';
 
@@ -23,47 +23,28 @@ import { TrainService } from './train.service';
 export class TrainController {
   private readonly logger = new Logger('TrainController');
   constructor(
-    private readonly trainService: TrainService,
+    private trainService: TrainService,
     private schedulesService: SchedulesService,
+    private journeysService: JourneysService,
   ) {}
 
-  // @MessagePattern('get_trains_by_partner')
-  // async getTrainsByPartner(
-  //   @Payload() partnerId: string,
-  //   @Ctx() context: RmqContext,
-  // ) {
-  //   const channel = context.getChannelRef();
-  //   const originalMessage = context.getMessage();
-  //   try {
-  //     const trains = await this.trainService.getTrainsByPartner(partnerId);
-  //     return { trains };
-  //   } catch (error) {
-  //     this.logger.error(error.message);
-  //     throw HttpStatus.SERVICE_UNAVAILABLE;
-  //   } finally {
-  //     channel.ack(originalMessage);
-  //   }
-  // }
-
-  // @MessagePattern('get_trains_by_station')
-  // async getBusesByStation(
-  //   @Payload() departureStationDTO: RegisterStationDTO,
-  //   @Ctx() context: RmqContext,
-  // ) {
-  //   const channel = context.getChannelRef();
-  //   const originalMessage = context.getMessage();
-  //   try {
-  //     const trains = await this.trainService.getTrainsByStation(
-  //       departureStationDTO,
-  //     );
-  //     return { trains };
-  //   } catch (error) {
-  //     this.logger.error(error.message);
-  //     throw HttpStatus.SERVICE_UNAVAILABLE;
-  //   } finally {
-  //     channel.ack(originalMessage);
-  //   }
-  // }
+  @MessagePattern('get_trains_by_partner')
+  async getTrainsByPartner(
+    @Payload() partnerId: string,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMessage = context.getMessage();
+    try {
+      const trains = await this.trainService.getTrainsByPartner(partnerId);
+      return { trains };
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
+    } finally {
+      channel.ack(originalMessage);
+    }
+  }
 
   @MessagePattern('post_train')
   async postTrain(@Payload() trainDTO: TrainDTO, @Ctx() context: RmqContext) {
@@ -74,32 +55,44 @@ export class TrainController {
       return { vehicle: train };
     } catch (error) {
       this.logger.error(error.message);
-      throw HttpStatus.SERVICE_UNAVAILABLE;
+      throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
     } finally {
       channel.ack(originalMessage);
     }
   }
 
-  @Get('trainsfilter')
-  async getTrainByFilter(@Body() schedulesDTO: GetSchedulesByConditionsDTO) {
+  @MessagePattern('get_trains_by_conditions')
+  async getTrainsByConditions(
+    @Payload() getSchedulesByConditionsDTO: GetSchedulesByConditionsDTO,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMessage = context.getMessage();
     try {
-      const schedules = await this.schedulesService.getSchedulesByConditions(
-        schedulesDTO,
+      const filteredSchedules = await this.schedulesService.getSchedulesByConditions(
+        getSchedulesByConditionsDTO,
       );
-      let trainId = [];
-      schedules.forEach(async (schedule) => {
-        try {
-          trainId = await this.trainService.getTrainByJourney(
+      if (!filteredSchedules) return filteredSchedules;
+      const schedules = await Promise.all(
+        filteredSchedules.map(async (schedule) => {
+          const stations = await this.journeysService.getJourneyDetailsByJourney(
             schedule.journeyId,
           );
-        } catch (error) {
-          this.logger.error(error.message);
-        }
-      });
-      return { trainId, ...schedules };
+          const train = await this.trainService.getTrainByJourney(
+            schedule.journeyId,
+          );
+          const options = await this.schedulesService.getScheduleDetailsBySchedule(
+            schedule.scheduleId,
+          );
+          return { ...schedule, train, stations, options };
+        }),
+      );
+      return { schedules };
     } catch (error) {
       this.logger.error(error.message);
-      throw HttpStatus.SERVICE_UNAVAILABLE;
+      throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
+    } finally {
+      channel.ack(originalMessage);
     }
   }
 }
