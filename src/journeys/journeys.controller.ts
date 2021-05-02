@@ -1,20 +1,15 @@
 import {
   Controller,
-  Get,
+
   HttpException,
   HttpStatus,
-  Logger,
-  Param,
-  Patch,
-  Post,
-  Query,
+  Logger
 } from '@nestjs/common';
-import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
 import {
   Ctx,
   MessagePattern,
   Payload,
-  RmqContext,
+  RmqContext
 } from '@nestjs/microservices';
 import { RegisterJourneyDTO } from 'src/dtos/journey.dto';
 import { JourneysService } from './journeys.service';
