@@ -1,15 +1,9 @@
-import {
-  Controller,
-
-  HttpException,
-  HttpStatus,
-  Logger
-} from '@nestjs/common';
+import { Controller, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import {
   Ctx,
   MessagePattern,
   Payload,
-  RmqContext
+  RmqContext,
 } from '@nestjs/microservices';
 import { RegisterJourneyDTO } from 'src/dtos/journey.dto';
 import { JourneysService } from './journeys.service';
@@ -29,7 +23,6 @@ export class JourneysController {
     const { vehicleId, stations } = registerJourneyDTO;
     try {
       const journey = await this.journeysService.addJourney(vehicleId);
-      console.log(`journey`, journey);
       const journeyDetails = await this.journeysService.addJourneyDetail(
         journey.id,
         stations,
