@@ -1,15 +1,4 @@
-import {
-  Controller,
-  Get,
-  HttpException,
-  HttpStatus,
-  Logger,
-  Param,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
-import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
+import { Controller, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import {
   Ctx,
   MessagePattern,
@@ -34,7 +23,6 @@ export class JourneysController {
     const { vehicleId, stations } = registerJourneyDTO;
     try {
       const journey = await this.journeysService.addJourney(vehicleId);
-      console.log(`journey`, journey);
       const journeyDetails = await this.journeysService.addJourneyDetail(
         journey.id,
         stations,
