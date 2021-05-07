@@ -5,6 +5,7 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  Param,
 } from '@nestjs/common';
 import {
   Ctx,
@@ -68,7 +69,6 @@ export class SchedulesController {
     }
   }
 
-  @Get()
   async getSchedulesByConditions(
     @Body() getSchedulesByConditionsDTO: GetSchedulesByConditionsDTO,
   ) {

@@ -4,6 +4,7 @@ import { QueryTypes } from 'sequelize';
 import { Sequelize } from 'sequelize';
 import { TrainDTO } from 'src/dtos/train.dto';
 import { Train } from '../models/train.model';
+import { UpdateTrainDTO } from 'src/dtos/update-train.dto';
 
 @Injectable()
 export class TrainService {
@@ -69,6 +70,30 @@ export class TrainService {
       return train[0];
     } catch (error) {
       throw new DatabaseError(error);
+    }
+  }
+
+  async updateTrainInformation(trainUpdateDTO: UpdateTrainDTO): Promise<Train> {
+    try {
+      const train = await this.sequelize.query(
+        `SP_UpdateTrainInformation @id=:id, @name=:name, @photoUrl=:photoUrl, @ticketPrice=:ticketPrice`,
+        {
+          replacements: {
+            id: trainUpdateDTO.vehicleId,
+            name: trainUpdateDTO.name,
+            photoUrl: trainUpdateDTO.photoUrl,
+            ticketPrice: trainUpdateDTO.ticketPrice,
+          },
+          type: QueryTypes.SELECT,
+          mapToModel: true,
+          model: Train,
+          raw: true,
+        },
+      );
+      return train[0];
+    } catch (error) {
+      this.logger.error(error.message);
+      throw DatabaseError;
     }
   }
 }

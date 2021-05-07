@@ -4,5 +4,6 @@ export class Journey extends Model {
   id: string;
   isActive: boolean;
   trainId: string;
+  travelTime: string;
   createdAt: string;
 }

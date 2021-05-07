@@ -5,6 +5,7 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  Patch,
   Query,
 } from '@nestjs/common';
 import {
@@ -18,7 +19,7 @@ import { TrainDTO } from 'src/dtos/train.dto';
 import { JourneysService } from 'src/journeys/journeys.service';
 import { SchedulesService } from 'src/schedules/schedules.service';
 import { TrainService } from './train.service';
-
+import { UpdateTrainDTO } from 'src/dtos/update-train.dto';
 @Controller('Trains')
 export class TrainController {
   private readonly logger = new Logger('TrainController');
@@ -62,6 +63,7 @@ export class TrainController {
   }
 
   @MessagePattern('get_trains_by_conditions')
+  @Get()
   async getTrainsByConditions(
     @Payload() getSchedulesByConditionsDTO: GetSchedulesByConditionsDTO,
     @Ctx() context: RmqContext,
@@ -88,6 +90,26 @@ export class TrainController {
         }),
       );
       return { schedules };
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
+    } finally {
+      channel.ack(originalMessage);
+    }
+  }
+
+  @MessagePattern('patch_train')
+  async patchTrain(
+    @Payload() trainUpdateDTO: UpdateTrainDTO,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMessage = context.getMessage();
+    try {
+      const train = await this.trainService.updateTrainInformation(
+        trainUpdateDTO,
+      );
+      return { vehicle: train };
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);

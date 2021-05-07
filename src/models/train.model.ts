@@ -9,5 +9,4 @@ export class Train extends Model {
   isRegistered: boolean;
   createAt: string;
   updatedAt: string;
-  softDelete: boolean;
 }

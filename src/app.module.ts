@@ -8,17 +8,18 @@ import { TrainService } from './trains/train.service';
 import { SchedulesModule } from './schedules/schedules.module';
 import { SchedulesService } from './schedules/schedules.service';
 import { JourneysService } from './journeys/journeys.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({}),
     SequelizeModule.forRoot({
       dialect: 'mssql',
-      host:
-        'traveloka-microservices.cwvwmifx3zgp.ap-southeast-1.rds.amazonaws.com',
-      port: 1433,
-      username: 'admin',
-      password: '!admin123',
-      database: 'Train_Service_DB',
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
     }),
     HealthModule,
     TrainModule,

@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@nestjs/common": "^7.6.15",
+    "@nestjs/config": "^0.6.3",
     "@nestjs/core": "^7.6.15",
     "@nestjs/mapped-types": "*",
     "@nestjs/microservices": "^7.6.15",
@@ -31,6 +32,7 @@
     "@nestjs/terminus": "^7.1.2",
     "amqp-connection-manager": "^3.2.2",
     "amqplib": "^0.7.1",
+    "class-validator": "^0.13.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.6",
