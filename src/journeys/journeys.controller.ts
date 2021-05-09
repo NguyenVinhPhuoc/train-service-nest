@@ -31,9 +31,12 @@ export class JourneysController {
   ) {
     const channel = context.getChannelRef();
     const originalMessage = context.getMessage();
-    const { vehicleId, stations } = registerJourneyDTO;
+    const { vehicleId, travelTime, stations } = registerJourneyDTO;
     try {
-      const journey = await this.journeysService.addJourney(vehicleId);
+      const journey = await this.journeysService.addJourney(
+        vehicleId,
+        travelTime,
+      );
       console.log(`journey`, journey);
       const journeyDetails = await this.journeysService.addJourneyDetail(
         journey.id,

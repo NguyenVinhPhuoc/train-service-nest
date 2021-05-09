@@ -29,15 +29,15 @@ export class JourneysService {
     }
   }
 
-  async addJourney(journeyDTO: RegisterJourneyDTO): Promise<Journey> {
+  async addJourney(vehicleId: string, travelTime: string): Promise<Journey> {
     try {
       const inserted = await this.sequelize.query(
-        'SP_AddJourney @trainId=:trainId @travelTime=:ravelTime',
+        'SP_AddJourney @trainId=:trainId, @travelTime=:travelTime',
         {
           type: QueryTypes.SELECT,
           replacements: {
-            trainId: journeyDTO.vehicleId,
-            travelTime: journeyDTO.travelTime,
+            trainId: vehicleId,
+            travelTime: travelTime,
           },
           raw: true,
           mapToModel: true,
