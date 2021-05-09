@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Sequelize, QueryTypes, DatabaseError } from 'sequelize';
+import { RegisterJourneyDTO } from 'src/dtos/journey.dto';
 import { RegisterStationDTO } from 'src/dtos/station.dto';
 import { Journey } from '../models/journey.model';
 import { JourneyDetails } from '../models/journeyDetails.model';
@@ -28,13 +29,16 @@ export class JourneysService {
     }
   }
 
-  async addJourney(vehicleId: string): Promise<Journey> {
+  async addJourney(journeyDTO: RegisterJourneyDTO): Promise<Journey> {
     try {
       const inserted = await this.sequelize.query(
-        'SP_AddJourney @trainId=:trainId',
+        'SP_AddJourney @trainId=:trainId @travelTime=:ravelTime',
         {
           type: QueryTypes.SELECT,
-          replacements: { trainId: vehicleId },
+          replacements: {
+            trainId: journeyDTO.vehicleId,
+            travelTime: journeyDTO.travelTime,
+          },
           raw: true,
           mapToModel: true,
           model: Journey,
