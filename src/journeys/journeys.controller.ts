@@ -1,15 +1,4 @@
-import {
-  Controller,
-  Get,
-  HttpException,
-  HttpStatus,
-  Logger,
-  Param,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
-import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
+import { Controller, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import {
   Ctx,
   MessagePattern,

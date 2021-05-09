@@ -40,7 +40,7 @@ export class SchedulesService {
     try {
       const details = await this.sequelize.query(
         'SP_AddSchedule @date=:date, @startTime=:startTime, ' +
-          '@endTime=:endTime, @travelTime=:travelTime, @gap=:gap, ' +
+          '@endTime=:endTime, @gap=:gap, ' +
           '@journeyId=:journeyId',
         {
           type: QueryTypes.SELECT,
@@ -48,7 +48,6 @@ export class SchedulesService {
             date: addScheduleDTO.date,
             startTime: addScheduleDTO.startTime,
             endTime: addScheduleDTO.endTime,
-            travelTime: addScheduleDTO.travelTime,
             gap: addScheduleDTO.gap,
             journeyId: addScheduleDTO.journeyId,
           },

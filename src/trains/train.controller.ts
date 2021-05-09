@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpException,
-  HttpStatus,
-  Logger,
-  Patch,
-  Query,
-} from '@nestjs/common';
+import { Controller, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import {
   Ctx,
   MessagePattern,
@@ -63,7 +54,6 @@ export class TrainController {
   }
 
   @MessagePattern('get_trains_by_conditions')
-  @Get()
   async getTrainsByConditions(
     @Payload() getSchedulesByConditionsDTO: GetSchedulesByConditionsDTO,
     @Ctx() context: RmqContext,
