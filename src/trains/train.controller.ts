@@ -7,10 +7,10 @@ import {
 } from '@nestjs/microservices';
 import { GetSchedulesByConditionsDTO } from 'src/dtos/get-schedules-by-conds.dto';
 import { TrainDTO } from 'src/dtos/train.dto';
+import { UpdateTrainDTO } from 'src/dtos/update-train.dto';
 import { JourneysService } from 'src/journeys/journeys.service';
 import { SchedulesService } from 'src/schedules/schedules.service';
 import { TrainService } from './train.service';
-import { UpdateTrainDTO } from 'src/dtos/update-train.dto';
 @Controller('Trains')
 export class TrainController {
   private readonly logger = new Logger('TrainController');

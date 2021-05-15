@@ -34,7 +34,8 @@ export class TrainService {
   async registerTrain(trainDTO: TrainDTO): Promise<Train> {
     try {
       const train = await this.sequelize.query(
-        `SP_RegisterTrain @name=:name, @photoUrl=:photoUrl, @ticketPrice=:ticketPrice, @partnerId=:partnerId`,
+        `SP_RegisterTrain @name=:name, @photoUrl=:photoUrl, ` +
+          `@ticketPrice=:ticketPrice, @partnerId=:partnerId`,
         {
           type: QueryTypes.SELECT,
           mapToModel: true,
