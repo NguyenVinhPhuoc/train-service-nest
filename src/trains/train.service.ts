@@ -77,10 +77,11 @@ export class TrainService {
   async updateTrainInformation(trainUpdateDTO: UpdateTrainDTO): Promise<Train> {
     try {
       const train = await this.sequelize.query(
-        `SP_UpdateTrainInformation @id=:id, @name=:name, @photoUrl=:photoUrl, @ticketPrice=:ticketPrice`,
+        `SP_UpdateTrainInformation @trainId=:vehicleId, @name=:name, ` +
+          `@photoUrl=:photoUrl, @ticketPrice=:ticketPrice`,
         {
           replacements: {
-            id: trainUpdateDTO.vehicleId,
+            vehicleId: trainUpdateDTO.vehicleId,
             name: trainUpdateDTO.name,
             photoUrl: trainUpdateDTO.photoUrl,
             ticketPrice: trainUpdateDTO.ticketPrice,
