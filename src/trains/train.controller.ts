@@ -1,4 +1,11 @@
-import { Controller, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import {
+  Controller,
+  HttpException,
+  HttpStatus,
+  Logger,
+  Patch,
+  Query,
+} from '@nestjs/common';
 import {
   Ctx,
   MessagePattern,
@@ -29,7 +36,7 @@ export class TrainController {
     const originalMessage = context.getMessage();
     try {
       const trains = await this.trainService.getTrainsByPartner(partnerId);
-      return { trains };
+      return trains;
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
@@ -44,7 +51,7 @@ export class TrainController {
     const originalMessage = context.getMessage();
     try {
       const train = await this.trainService.registerTrain(trainDTO);
-      return { vehicle: train };
+      return train;
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
@@ -79,7 +86,7 @@ export class TrainController {
           return { ...schedule, train, stations, options };
         }),
       );
-      return { schedules };
+      return schedules;
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
@@ -99,12 +106,23 @@ export class TrainController {
       const train = await this.trainService.updateTrainInformation(
         trainUpdateDTO,
       );
-      return { vehicle: train };
+      return train;
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
     } finally {
       channel.ack(originalMessage);
+    }
+  }
+
+  @Patch()
+  async unregisterTrain(@Query('trainId') trainId: string) {
+    try {
+      const train = this.trainService.unregisterTrain(trainId);
+      return train;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
     }
   }
 }

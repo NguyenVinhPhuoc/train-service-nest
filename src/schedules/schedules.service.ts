@@ -115,7 +115,7 @@ export class SchedulesService {
       const scheduleDetails = await this.sequelize.query(
         'SP_GetScheduleDetailsBySchedule @scheduleId=:scheduleId',
         {
-          type: QueryTypes.SELECT,
+          type: QueryTypes.RAW,
           replacements: { scheduleId },
           raw: true,
           mapToModel: true,

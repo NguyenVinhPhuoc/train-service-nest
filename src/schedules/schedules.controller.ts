@@ -15,6 +15,7 @@ import {
 } from '@nestjs/microservices';
 import { AddScheduleDTO } from 'src/dtos/add-schedule.dto';
 import { GetSchedulesByConditionsDTO } from 'src/dtos/get-schedules-by-conds.dto';
+import { Schedule } from 'src/models/schedule.model';
 import { SchedulesService } from './schedules.service';
 
 @Controller('schedules')

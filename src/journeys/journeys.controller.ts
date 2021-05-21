@@ -26,7 +26,6 @@ export class JourneysController {
         vehicleId,
         travelTime,
       );
-      console.log(`journey`, journey);
       const journeyDetails = await this.journeysService.addJourneyDetail(
         journey.id,
         stations,
@@ -87,6 +86,35 @@ export class JourneysController {
       return {
         journeys: journeysWithDetails,
         message: 'Activate journey successfully',
+      };
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
+    } finally {
+      channel.ack(originalMessage);
+    }
+  }
+
+  @MessagePattern('deactivate_journey')
+  async deactivateJourney(
+    @Payload() journeyId: string,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMessage = context.getMessage();
+    try {
+      const journeys = await this.journeysService.deactivateJourney(journeyId);
+      const journeysWithDetails = await Promise.all(
+        journeys.map(async (journey) => {
+          const stations = await this.journeysService.getJourneyDetailsByJourney(
+            journey.id,
+          );
+          return { ...journey, stations };
+        }),
+      );
+      return {
+        journeys: journeysWithDetails,
+        message: 'Deactivate journey successfully',
       };
     } catch (error) {
       this.logger.error(error.message);

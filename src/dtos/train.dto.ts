@@ -3,4 +3,5 @@ export class TrainDTO {
   photoUrl?: string;
   ticketPrice: number;
   partnerId: string;
+  classId: string;
 }

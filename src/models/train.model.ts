@@ -7,6 +7,7 @@ export class Train extends Model {
   partnerId: string;
   ticketPrice: number;
   isRegistered: boolean;
+  classId: string;
   createAt: string;
   updatedAt: string;
 }

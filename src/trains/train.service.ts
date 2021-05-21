@@ -5,6 +5,7 @@ import { Sequelize } from 'sequelize';
 import { TrainDTO } from 'src/dtos/train.dto';
 import { Train } from '../models/train.model';
 import { UpdateTrainDTO } from 'src/dtos/update-train.dto';
+import { ScheduleDetails } from 'src/models/schedule-details.model';
 
 @Injectable()
 export class TrainService {
@@ -34,7 +35,8 @@ export class TrainService {
   async registerTrain(trainDTO: TrainDTO): Promise<Train> {
     try {
       const train = await this.sequelize.query(
-        `SP_RegisterTrain @name=:name, @photoUrl=:photoUrl, @ticketPrice=:ticketPrice, @partnerId=:partnerId`,
+        `SP_RegisterTrain @name=:name, @photoUrl=:photoUrl, @ticketPrice=:ticketPrice, @classId=:classId, ` +
+          `@partnerId=:partnerId`,
         {
           type: QueryTypes.SELECT,
           mapToModel: true,
@@ -44,6 +46,7 @@ export class TrainService {
             photoUrl: trainDTO.photoUrl,
             ticketPrice: trainDTO.ticketPrice,
             partnerId: trainDTO.partnerId,
+            classId: trainDTO.classId,
           },
           raw: true,
         },
@@ -76,7 +79,8 @@ export class TrainService {
   async updateTrainInformation(trainUpdateDTO: UpdateTrainDTO): Promise<Train> {
     try {
       const train = await this.sequelize.query(
-        `SP_UpdateTrainInformation @id=:id, @name=:name, @photoUrl=:photoUrl, @ticketPrice=:ticketPrice`,
+        `SP_UpdateTrainInformation @id=:id, @name=:name, @photoUrl=:photoUrl, '+
+        '@ticketPrice=:ticketPrice, , @classId=:classId`,
         {
           replacements: {
             id: trainUpdateDTO.vehicleId,
@@ -88,6 +92,25 @@ export class TrainService {
           mapToModel: true,
           model: Train,
           raw: true,
+        },
+      );
+      return train[0];
+    } catch (error) {
+      this.logger.error(error.message);
+      throw DatabaseError;
+    }
+  }
+
+  async unregisterTrain(trainId: string) {
+    try {
+      const train = await this.sequelize.query(
+        'SP_UnregisterTrain @trainId=:trainId',
+        {
+          replacements: {
+            trainId: trainId,
+            type: QueryTypes.SELECT,
+            raw: true,
+          },
         },
       );
       return train[0];

@@ -128,4 +128,23 @@ export class JourneysService {
       throw new DatabaseError(error);
     }
   }
+
+  async deactivateJourney(journeyId: string): Promise<Journey[]> {
+    try {
+      const journeys = await this.sequelize.query(
+        'SP_DeactivateJourney @journeyId=:journeyId',
+        {
+          type: QueryTypes.SELECT,
+          replacements: { journeyId },
+          raw: true,
+          mapToModel: true,
+          model: Journey,
+        },
+      );
+      return journeys;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new DatabaseError(error);
+    }
+  }
 }
