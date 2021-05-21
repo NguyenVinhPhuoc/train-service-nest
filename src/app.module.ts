@@ -12,13 +12,7 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-<<<<<<< HEAD
     ConfigModule.forRoot({ envFilePath: ['.env.production'] }),
-=======
-    ConfigModule.forRoot({
-      envFilePath: ['.env.development'],
-    }),
->>>>>>> 9747da87781386a9830e1ac2e2b7b9fb4fae4bd2
     SequelizeModule.forRoot({
       dialect: 'mssql',
       host: process.env.DB_HOST,

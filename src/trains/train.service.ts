@@ -35,13 +35,8 @@ export class TrainService {
   async registerTrain(trainDTO: TrainDTO): Promise<Train> {
     try {
       const train = await this.sequelize.query(
-<<<<<<< HEAD
         `SP_RegisterTrain @name=:name, @photoUrl=:photoUrl, @ticketPrice=:ticketPrice, @classId=:classId, ` +
           `@partnerId=:partnerId`,
-=======
-        `SP_RegisterTrain @name=:name, @photoUrl=:photoUrl, ` +
-          `@ticketPrice=:ticketPrice, @partnerId=:partnerId`,
->>>>>>> 9747da87781386a9830e1ac2e2b7b9fb4fae4bd2
         {
           type: QueryTypes.SELECT,
           mapToModel: true,
@@ -84,13 +79,8 @@ export class TrainService {
   async updateTrainInformation(trainUpdateDTO: UpdateTrainDTO): Promise<Train> {
     try {
       const train = await this.sequelize.query(
-<<<<<<< HEAD
         `SP_UpdateTrainInformation @id=:id, @name=:name, @photoUrl=:photoUrl, '+
         '@ticketPrice=:ticketPrice, , @classId=:classId`,
-=======
-        `SP_UpdateTrainInformation @trainId=:vehicleId, @name=:name, ` +
-          `@photoUrl=:photoUrl, @ticketPrice=:ticketPrice`,
->>>>>>> 9747da87781386a9830e1ac2e2b7b9fb4fae4bd2
         {
           replacements: {
             vehicleId: trainUpdateDTO.vehicleId,
