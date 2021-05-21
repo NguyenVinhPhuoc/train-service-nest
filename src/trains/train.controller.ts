@@ -36,7 +36,7 @@ export class TrainController {
     const originalMessage = context.getMessage();
     try {
       const trains = await this.trainService.getTrainsByPartner(partnerId);
-      return trains;
+      return { vehicle: trains };
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
@@ -51,7 +51,7 @@ export class TrainController {
     const originalMessage = context.getMessage();
     try {
       const train = await this.trainService.registerTrain(trainDTO);
-      return train;
+      return { vehicle: train };
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
@@ -86,7 +86,7 @@ export class TrainController {
           return { ...schedule, train, stations, options };
         }),
       );
-      return schedules;
+      return { schedule: schedules };
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
@@ -106,7 +106,7 @@ export class TrainController {
       const train = await this.trainService.updateTrainInformation(
         trainUpdateDTO,
       );
-      return train;
+      return { vehicle: train };
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
@@ -119,7 +119,7 @@ export class TrainController {
   async unregisterTrain(@Query('trainId') trainId: string) {
     try {
       const train = this.trainService.unregisterTrain(trainId);
-      return train;
+      return { vehicle: train };
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
