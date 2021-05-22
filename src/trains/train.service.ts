@@ -1,11 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { DatabaseError } from 'sequelize';
-import { QueryTypes } from 'sequelize';
-import { Sequelize } from 'sequelize';
+import { DatabaseError, QueryTypes, Sequelize } from 'sequelize';
 import { TrainDTO } from 'src/dtos/train.dto';
-import { Train } from '../models/train.model';
 import { UpdateTrainDTO } from 'src/dtos/update-train.dto';
-import { ScheduleDetails } from 'src/models/schedule-details.model';
+import { Train } from '../models/train.model';
 
 @Injectable()
 export class TrainService {
@@ -79,14 +76,15 @@ export class TrainService {
   async updateTrainInformation(trainUpdateDTO: UpdateTrainDTO): Promise<Train> {
     try {
       const train = await this.sequelize.query(
-        `SP_UpdateTrainInformation @id=:id, @name=:name, @photoUrl=:photoUrl, '+
-        '@ticketPrice=:ticketPrice, , @classId=:classId`,
+        `SP_UpdateTrainInformation @vehicleId=:vehicleId, @name=:name, @photoUrl=:photoUrl, ` +
+          `@ticketPrice=:ticketPrice, @classId=:classId`,
         {
           replacements: {
             vehicleId: trainUpdateDTO.vehicleId,
             name: trainUpdateDTO.name,
             photoUrl: trainUpdateDTO.photoUrl,
             ticketPrice: trainUpdateDTO.ticketPrice,
+            classId: trainUpdateDTO.classId,
           },
           type: QueryTypes.SELECT,
           mapToModel: true,

@@ -36,7 +36,7 @@ export class TrainController {
     const originalMessage = context.getMessage();
     try {
       const trains = await this.trainService.getTrainsByPartner(partnerId);
-      return trains;
+      return { trains };
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
