@@ -14,6 +14,7 @@ import {
   RmqContext,
 } from '@nestjs/microservices';
 import { AddScheduleDTO } from 'src/dtos/add-schedule.dto';
+import { BookTrainDto } from 'src/dtos/create-book.dtos';
 import { GetSchedulesByConditionsDTO } from 'src/dtos/get-schedules-by-conds.dto';
 import { Schedule } from 'src/models/schedule.model';
 import { SchedulesService } from './schedules.service';
@@ -81,6 +82,24 @@ export class SchedulesController {
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
+    }
+  }
+
+  @MessagePattern('book_train')
+  async bookTrain(
+    @Payload() bookTrainDto: BookTrainDto,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMessage = context.getMessage();
+    try {
+      const isBookable = await this.schedulesService.bookTrain(bookTrainDto);
+      return isBookable;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
+    } finally {
+      channel.ack(originalMessage);
     }
   }
 }

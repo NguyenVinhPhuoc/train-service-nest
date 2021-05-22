@@ -115,14 +115,21 @@ export class TrainController {
     }
   }
 
-  @Patch()
-  async unregisterTrain(@Query('trainId') trainId: string) {
+  @MessagePattern('unregister_train')
+  async unregisterTrain(
+    @Payload() trainId: string,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMessage = context.getMessage();
     try {
       const train = this.trainService.unregisterTrain(trainId);
       return train;
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
+    } finally {
+      channel.ack(originalMessage);
     }
   }
 }
