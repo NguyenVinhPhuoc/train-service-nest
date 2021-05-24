@@ -106,12 +106,34 @@ export class TrainService {
         {
           replacements: {
             trainId: trainId,
-            type: QueryTypes.SELECT,
-            raw: true,
           },
+          type: QueryTypes.SELECT,
+          raw: true,
         },
       );
       return train[0];
+    } catch (error) {
+      this.logger.error(error.message);
+      throw DatabaseError;
+    }
+  }
+
+  async getTicketInformation(scheduleDetailId: string) {
+    try {
+      const ticketFullInformation = await this.sequelize.query(
+        'SP_GetTicketFullInformation @scheduleDetailId=:scheduleDetailId',
+        {
+          replacements: { scheduleDetailId },
+          raw: true,
+          type: QueryTypes.RAW,
+        },
+      );
+      const ticket = ticketFullInformation[0]
+        .map((each: string) => {
+          return Object.values(each)[0];
+        })
+        .reduce((acc: string, curr: string) => acc + curr);
+      return JSON.parse(ticket);
     } catch (error) {
       this.logger.error(error.message);
       throw DatabaseError;

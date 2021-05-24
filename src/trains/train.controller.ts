@@ -132,4 +132,24 @@ export class TrainController {
       channel.ack(originalMessage);
     }
   }
+
+  @MessagePattern('get_full_ticket_information')
+  async getTicketFullInformation(
+    @Payload() scheduleDetailId: string,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMessage = context.getMessage();
+    try {
+      const ticketFullInformation = this.trainService.getTicketInformation(
+        scheduleDetailId,
+      );
+      return ticketFullInformation;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
+    } finally {
+      channel.ack(originalMessage);
+    }
+  }
 }
