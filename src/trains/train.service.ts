@@ -1,11 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { DatabaseError } from 'sequelize';
-import { QueryTypes } from 'sequelize';
-import { Sequelize } from 'sequelize';
+import { DatabaseError, QueryTypes, Sequelize } from 'sequelize';
 import { TrainDTO } from 'src/dtos/train.dto';
-import { Train } from '../models/train.model';
 import { UpdateTrainDTO } from 'src/dtos/update-train.dto';
-import { ScheduleDetails } from 'src/models/schedule-details.model';
+import { Train } from '../models/train.model';
 
 @Injectable()
 export class TrainService {
@@ -79,14 +76,15 @@ export class TrainService {
   async updateTrainInformation(trainUpdateDTO: UpdateTrainDTO): Promise<Train> {
     try {
       const train = await this.sequelize.query(
-        `SP_UpdateTrainInformation @id=:id, @name=:name, @photoUrl=:photoUrl, '+
-        '@ticketPrice=:ticketPrice, , @classId=:classId`,
+        `SP_UpdateTrainInformation @vehicleId=:vehicleId, @name=:name, @photoUrl=:photoUrl, ` +
+          `@ticketPrice=:ticketPrice, @classId=:classId`,
         {
           replacements: {
             vehicleId: trainUpdateDTO.vehicleId,
             name: trainUpdateDTO.name,
             photoUrl: trainUpdateDTO.photoUrl,
             ticketPrice: trainUpdateDTO.ticketPrice,
+            classId: trainUpdateDTO.classId,
           },
           type: QueryTypes.SELECT,
           mapToModel: true,
@@ -108,12 +106,34 @@ export class TrainService {
         {
           replacements: {
             trainId: trainId,
-            type: QueryTypes.SELECT,
-            raw: true,
           },
+          type: QueryTypes.SELECT,
+          raw: true,
         },
       );
       return train[0];
+    } catch (error) {
+      this.logger.error(error.message);
+      throw DatabaseError;
+    }
+  }
+
+  async getTicketInformation(scheduleDetailId: string) {
+    try {
+      const ticketFullInformation = await this.sequelize.query(
+        'SP_GetTicketFullInformation @scheduleDetailId=:scheduleDetailId',
+        {
+          replacements: { scheduleDetailId },
+          raw: true,
+          type: QueryTypes.RAW,
+        },
+      );
+      const ticket = ticketFullInformation[0]
+        .map((each: string) => {
+          return Object.values(each)[0];
+        })
+        .reduce((acc: string, curr: string) => acc + curr);
+      return JSON.parse(ticket);
     } catch (error) {
       this.logger.error(error.message);
       throw DatabaseError;

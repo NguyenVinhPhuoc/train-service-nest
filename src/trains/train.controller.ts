@@ -36,7 +36,7 @@ export class TrainController {
     const originalMessage = context.getMessage();
     try {
       const trains = await this.trainService.getTrainsByPartner(partnerId);
-      return { vehicle: trains };
+      return { trains };
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
@@ -115,14 +115,41 @@ export class TrainController {
     }
   }
 
-  @Patch()
-  async unregisterTrain(@Query('trainId') trainId: string) {
+  @MessagePattern('unregister_train')
+  async unregisterTrain(
+    @Payload() trainId: string,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMessage = context.getMessage();
     try {
       const train = this.trainService.unregisterTrain(trainId);
       return { vehicle: train };
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
+    } finally {
+      channel.ack(originalMessage);
+    }
+  }
+
+  @MessagePattern('get_full_ticket_information')
+  async getTicketFullInformation(
+    @Payload() scheduleDetailId: string,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMessage = context.getMessage();
+    try {
+      const ticketFullInformation = this.trainService.getTicketInformation(
+        scheduleDetailId,
+      );
+      return ticketFullInformation;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
+    } finally {
+      channel.ack(originalMessage);
     }
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseError, QueryTypes, Sequelize } from 'sequelize';
 import { AddScheduleDTO } from 'src/dtos/add-schedule.dto';
+import { BookTrainDto } from 'src/dtos/create-book.dtos';
 import { GetSchedulesByConditionsDTO } from 'src/dtos/get-schedules-by-conds.dto';
 import { FilteredSchedule } from 'src/models/filtered-schedule.model';
 import { ScheduleDetails } from 'src/models/schedule-details.model';
@@ -123,6 +124,28 @@ export class SchedulesService {
         },
       );
       return scheduleDetails;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new DatabaseError(error);
+    }
+  }
+
+  async bookTrain(bookTrainDto: BookTrainDto) {
+    try {
+      console.log(bookTrainDto);
+
+      const isBookable = await this.sequelize.query(
+        'SP_BookTrain @scheduleDetailId=:scheduleDetailId, @numberOfTickets=:numberOfTickets',
+        {
+          type: QueryTypes.RAW,
+          replacements: {
+            scheduleDetailId: bookTrainDto.scheduleDetailId,
+            numberOfTickets: bookTrainDto.numberOfTickets,
+            raw: true,
+          },
+        },
+      );
+      return isBookable;
     } catch (error) {
       this.logger.error(error.message);
       throw new DatabaseError(error);
