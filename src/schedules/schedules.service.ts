@@ -28,6 +28,8 @@ export class SchedulesService {
           model: Schedule,
         },
       );
+      console.log(schedules[0]);
+
       return schedules[0];
     } catch (error) {
       this.logger.error(error.message);
@@ -109,9 +111,7 @@ export class SchedulesService {
     }
   }
 
-  async getScheduleDetailsBySchedule(
-    scheduleId: string,
-  ): Promise<ScheduleDetails[]> {
+  async getScheduleDetailsBySchedule(scheduleId: string) {
     try {
       const scheduleDetails = await this.sequelize.query(
         'SP_GetScheduleDetailsBySchedule @scheduleId=:scheduleId',
@@ -132,12 +132,10 @@ export class SchedulesService {
 
   async bookTrain(bookTrainDto: BookTrainDto) {
     try {
-      console.log(bookTrainDto);
-
       const isBookable = await this.sequelize.query(
         'SP_BookTrain @scheduleDetailId=:scheduleDetailId, @numberOfTickets=:numberOfTickets',
         {
-          type: QueryTypes.RAW,
+          type: QueryTypes.SELECT,
           replacements: {
             scheduleDetailId: bookTrainDto.scheduleDetailId,
             numberOfTickets: bookTrainDto.numberOfTickets,
@@ -146,6 +144,88 @@ export class SchedulesService {
         },
       );
       return isBookable;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new DatabaseError(error);
+    }
+  }
+
+  async cancelBook(bookTrainDto: BookTrainDto) {
+    try {
+      const cancelBook = await this.sequelize.query(
+        'SP_RevokeTickets @scheduleDetailId=:scheduleDetailId, @numberOfTickets=:numberOfTickets',
+        {
+          type: QueryTypes.SELECT,
+          replacements: {
+            scheduleDetailId: bookTrainDto.scheduleDetailId,
+            numberOfTickets: bookTrainDto.numberOfTickets,
+            raw: true,
+          },
+        },
+      );
+      return cancelBook;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new DatabaseError(error);
+    }
+  }
+
+  async manipulateScheduleDetails(
+    scheduleDetailId: string,
+    type: string,
+  ): Promise<ScheduleDetails> {
+    try {
+      const scheduleDetails = await this.sequelize.query(
+        `SP_${type}ScheduleDetail @scheduleDetailId=:scheduleDetailId`,
+        {
+          type: QueryTypes.SELECT,
+          replacements: { scheduleDetailId },
+          raw: true,
+          mapToModel: true,
+          model: ScheduleDetails,
+        },
+      );
+      return scheduleDetails[0];
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new DatabaseError(error);
+    }
+  }
+
+  async cancelScheduleDetail(
+    scheduleDetailId: string,
+  ): Promise<ScheduleDetails> {
+    try {
+      const detail = await this.sequelize.query(
+        'SP_CancelScheduleDetail @scheduleDetailId=:scheduleDetailId',
+        {
+          type: QueryTypes.SELECT,
+          replacements: { scheduleDetailId },
+          raw: true,
+          mapToModel: true,
+          model: ScheduleDetails,
+        },
+      );
+      return detail[0];
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new DatabaseError(error);
+    }
+  }
+  async revokeTickets(
+    scheduleDetailId: string,
+    numberOfTickets: number,
+  ): Promise<boolean> {
+    try {
+      const result = await this.sequelize.query(
+        'SP_RevokeTickets @scheduleDetailId=:scheduleDetailId, ' +
+          '@numberOfTickets=:numberOfTickets',
+        {
+          type: QueryTypes.UPDATE,
+          replacements: { scheduleDetailId, numberOfTickets },
+        },
+      );
+      return result[1] === 2;
     } catch (error) {
       this.logger.error(error.message);
       throw new DatabaseError(error);

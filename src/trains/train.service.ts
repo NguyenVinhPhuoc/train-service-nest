@@ -13,7 +13,7 @@ export class TrainService {
   async getTrainsByPartner(partnerId: string) {
     try {
       const trains = await this.sequelize.query(
-        `SP_GetTrainsByPartner @partnerId=:partnerId`,
+        'SP_GetTrainsByPartner @partnerId=:partnerId',
         {
           type: QueryTypes.SELECT,
           replacements: { partnerId },
@@ -32,7 +32,8 @@ export class TrainService {
   async registerTrain(trainDTO: TrainDTO): Promise<Train> {
     try {
       const train = await this.sequelize.query(
-        `SP_RegisterTrain @name=:name, @photoUrl=:photoUrl, @ticketPrice=:ticketPrice, @classId=:classId, ` +
+        `SP_RegisterTrain @name=:name, @photoUrl=:photoUrl,` +
+          ` @ticketPrice=:ticketPrice, @classId=:classId, ` +
           `@partnerId=:partnerId`,
         {
           type: QueryTypes.SELECT,
@@ -76,7 +77,8 @@ export class TrainService {
   async updateTrainInformation(trainUpdateDTO: UpdateTrainDTO): Promise<Train> {
     try {
       const train = await this.sequelize.query(
-        `SP_UpdateTrainInformation @vehicleId=:vehicleId, @name=:name, @photoUrl=:photoUrl, ` +
+        `SP_UpdateTrainInformation @vehicleId=:vehicleId,` +
+          ` @name=:name, @photoUrl=:photoUrl, ` +
           `@ticketPrice=:ticketPrice, @classId=:classId`,
         {
           replacements: {
@@ -111,7 +113,7 @@ export class TrainService {
           raw: true,
         },
       );
-      return train[0];
+      return train;
     } catch (error) {
       this.logger.error(error.message);
       throw DatabaseError;

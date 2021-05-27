@@ -99,4 +99,67 @@ export class SchedulesController {
       channel.ack(originalMessage);
     }
   }
+
+  @MessagePattern('cancel_book')
+  async cancelBook(
+    @Payload() bookTrainDto: BookTrainDto,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMessage = context.getMessage();
+    try {
+      const cancelBook = await this.schedulesService.cancelBook(bookTrainDto);
+      return cancelBook;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
+    } finally {
+      channel.ack(originalMessage);
+    }
+  }
+
+  @MessagePattern('cancel_schedule_detail')
+  async cancelScheduleDetail(
+    @Payload() scheduleDetailId: string,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMessage = context.getMessage();
+    try {
+      const detail = await this.schedulesService.cancelScheduleDetail(
+        scheduleDetailId,
+      );
+      return { detail };
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
+    } finally {
+      channel.ack(originalMessage);
+    }
+  }
+
+  @MessagePattern('manipulate_schedule_details')
+  async manipulateScheduleDetails(
+    @Payload()
+    data: {
+      scheduleDetailId: string;
+      type: string;
+    },
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMessage = context.getMessage();
+    try {
+      const scheduleDetails = await this.schedulesService.manipulateScheduleDetails(
+        data.scheduleDetailId,
+        data.type,
+      );
+      return { detail: scheduleDetails };
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
+    } finally {
+      channel.ack(originalMessage);
+    }
+  }
 }
