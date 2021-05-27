@@ -1,11 +1,9 @@
 import {
   Body,
   Controller,
-  Get,
   HttpException,
   HttpStatus,
   Logger,
-  Param,
 } from '@nestjs/common';
 import {
   Ctx,
@@ -16,7 +14,6 @@ import {
 import { AddScheduleDTO } from 'src/dtos/add-schedule.dto';
 import { BookTrainDto } from 'src/dtos/create-book.dtos';
 import { GetSchedulesByConditionsDTO } from 'src/dtos/get-schedules-by-conds.dto';
-import { Schedule } from 'src/models/schedule.model';
 import { SchedulesService } from './schedules.service';
 
 @Controller('schedules')
