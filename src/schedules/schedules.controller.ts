@@ -1,11 +1,9 @@
 import {
   Body,
   Controller,
-  Get,
   HttpException,
   HttpStatus,
   Logger,
-  Param,
 } from '@nestjs/common';
 import {
   Ctx,
@@ -16,7 +14,6 @@ import {
 import { AddScheduleDTO } from 'src/dtos/add-schedule.dto';
 import { BookTrainDto } from 'src/dtos/create-book.dtos';
 import { GetSchedulesByConditionsDTO } from 'src/dtos/get-schedules-by-conds.dto';
-import { Schedule } from 'src/models/schedule.model';
 import { SchedulesService } from './schedules.service';
 
 @Controller('schedules')
@@ -95,6 +92,69 @@ export class SchedulesController {
     try {
       const isBookable = await this.schedulesService.bookTrain(bookTrainDto);
       return isBookable;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
+    } finally {
+      channel.ack(originalMessage);
+    }
+  }
+
+  @MessagePattern('cancel_book')
+  async cancelBook(
+    @Payload() bookTrainDto: BookTrainDto,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMessage = context.getMessage();
+    try {
+      const cancelBook = await this.schedulesService.cancelBook(bookTrainDto);
+      return cancelBook;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
+    } finally {
+      channel.ack(originalMessage);
+    }
+  }
+
+  @MessagePattern('cancel_schedule_detail')
+  async cancelScheduleDetail(
+    @Payload() scheduleDetailId: string,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMessage = context.getMessage();
+    try {
+      const detail = await this.schedulesService.cancelScheduleDetail(
+        scheduleDetailId,
+      );
+      return { detail };
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
+    } finally {
+      channel.ack(originalMessage);
+    }
+  }
+
+  @MessagePattern('manipulate_schedule_details')
+  async manipulateScheduleDetails(
+    @Payload()
+    data: {
+      scheduleDetailId: string;
+      type: string;
+    },
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMessage = context.getMessage();
+    try {
+      const scheduleDetails = await this.schedulesService.manipulateScheduleDetails(
+        data.scheduleDetailId,
+        data.type,
+      );
+      return { detail: scheduleDetails };
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
