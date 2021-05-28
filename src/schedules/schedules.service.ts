@@ -231,4 +231,36 @@ export class SchedulesService {
       throw new DatabaseError(error);
     }
   }
+
+  async getScheduleDetailsByPartnerAndConditions(
+    partnerId: string,
+    getSchedulesByConditionsDTO: GetSchedulesByConditionsDTO,
+  ) {
+    try {
+      const jsonRecord = await this.sequelize.query(
+        'SP_GetScheduleDetailsByPartnerAndConditions @depDistrict=:depDistrict, @depCity=:depCity, ' +
+          '@depCountry=:depCountry, @desDistrict=:desDistrict, ' +
+          '@desCity=:desCity, @desCountry=:desCountry, @date=:date, ' +
+          '@pickUpTime=:pickUpTime, @partnerId=:partnerId',
+        {
+          type: QueryTypes.RAW,
+          replacements: {
+            ...getSchedulesByConditionsDTO,
+            partnerId,
+          },
+        },
+      );
+      const schedules = JSON.parse(
+        Object.values(jsonRecord[0])
+          .map((each: string) => {
+            return Object.values(each)[0];
+          })
+          .reduce((acc: string, curr: string) => acc + curr, ''),
+      );
+      return schedules;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new DatabaseError(error);
+    }
+  }
 }

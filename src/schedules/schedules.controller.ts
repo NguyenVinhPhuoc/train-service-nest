@@ -162,4 +162,29 @@ export class SchedulesController {
       channel.ack(originalMessage);
     }
   }
+
+  @MessagePattern('get_schedule_details_by_partner_and_conditions')
+  async getScheduleDetailsByPartnerAndConditions(
+    @Payload()
+    data: {
+      partnerId: string;
+      getSchedulesByConditionsDTO: GetSchedulesByConditionsDTO;
+    },
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMessage = context.getMessage();
+    try {
+      const tickets = await this.schedulesService.getScheduleDetailsByPartnerAndConditions(
+        data.partnerId,
+        data.getSchedulesByConditionsDTO,
+      );
+      return { tickets };
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
+    } finally {
+      channel.ack(originalMessage);
+    }
+  }
 }
