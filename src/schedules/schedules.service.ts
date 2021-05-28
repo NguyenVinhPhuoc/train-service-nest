@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseError, QueryTypes, Sequelize } from 'sequelize';
-import { AddScheduleDTO } from 'src/dtos/add-schedule.dto';
-import { BookTrainDto } from 'src/dtos/create-book.dtos';
-import { GetSchedulesByConditionsDTO } from 'src/dtos/get-schedules-by-conds.dto';
-import { FilteredSchedule } from 'src/models/filtered-schedule.model';
-import { ScheduleDetails } from 'src/models/schedule-details.model';
-import { Schedule } from 'src/models/schedule.model';
+import { AddScheduleDTO } from '../dtos/add-schedule.dto';
+import { BookTrainDto } from '../dtos/create-book.dtos';
+import { GetSchedulesByConditionsDTO } from '../dtos/get-schedules-by-conds.dto';
+import { FilteredSchedule } from '../models/filtered-schedule.model';
+import { ScheduleDetails } from '../models/schedule-details.model';
+import { Schedule } from '../models/schedule.model';
 
 @Injectable()
 export class SchedulesService {

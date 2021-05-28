@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Sequelize, QueryTypes, DatabaseError } from 'sequelize';
-import { RegisterJourneyDTO } from 'src/dtos/journey.dto';
-import { RegisterStationDTO } from 'src/dtos/station.dto';
+import { RegisterStationDTO } from '../dtos/station.dto';
 import { Journey } from '../models/journey.model';
 import { JourneyDetails } from '../models/journeyDetails.model';
 
@@ -116,7 +115,6 @@ export class JourneysService {
               },
               mapToModel: true,
               model: JourneyDetails,
-              raw: true,
             },
           );
           return inserted[0];

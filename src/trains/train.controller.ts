@@ -12,11 +12,11 @@ import {
   Payload,
   RmqContext,
 } from '@nestjs/microservices';
-import { GetSchedulesByConditionsDTO } from 'src/dtos/get-schedules-by-conds.dto';
-import { TrainDTO } from 'src/dtos/train.dto';
-import { UpdateTrainDTO } from 'src/dtos/update-train.dto';
-import { JourneysService } from 'src/journeys/journeys.service';
-import { SchedulesService } from 'src/schedules/schedules.service';
+import { GetSchedulesByConditionsDTO } from '../dtos/get-schedules-by-conds.dto';
+import { TrainDTO } from '../dtos/train.dto';
+import { UpdateTrainDTO } from '../dtos/update-train.dto';
+import { JourneysService } from '../journeys/journeys.service';
+import { SchedulesService } from '../schedules/schedules.service';
 import { TrainService } from './train.service';
 @Controller('Trains')
 export class TrainController {
@@ -51,7 +51,7 @@ export class TrainController {
     const originalMessage = context.getMessage();
     try {
       const train = await this.trainService.registerTrain(trainDTO);
-      return train;
+      return { vehicle: train };
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
@@ -86,7 +86,7 @@ export class TrainController {
           return { ...schedule, train, stations, options };
         }),
       );
-      return schedules;
+      return { schedule: schedules };
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
@@ -106,7 +106,7 @@ export class TrainController {
       const train = await this.trainService.updateTrainInformation(
         trainUpdateDTO,
       );
-      return train;
+      return { vehicle: train };
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
@@ -124,7 +124,7 @@ export class TrainController {
     const originalMessage = context.getMessage();
     try {
       const train = this.trainService.unregisterTrain(trainId);
-      return train;
+      return { vehicle: train };
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);

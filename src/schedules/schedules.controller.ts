@@ -11,9 +11,9 @@ import {
   Payload,
   RmqContext,
 } from '@nestjs/microservices';
-import { AddScheduleDTO } from 'src/dtos/add-schedule.dto';
-import { BookTrainDto } from 'src/dtos/create-book.dtos';
-import { GetSchedulesByConditionsDTO } from 'src/dtos/get-schedules-by-conds.dto';
+import { AddScheduleDTO } from '../dtos/add-schedule.dto';
+import { BookTrainDto } from '../dtos/create-book.dtos';
+import { GetSchedulesByConditionsDTO } from '../dtos/get-schedules-by-conds.dto';
 import { SchedulesService } from './schedules.service';
 
 @Controller('schedules')
