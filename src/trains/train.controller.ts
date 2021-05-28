@@ -12,11 +12,11 @@ import {
   Payload,
   RmqContext,
 } from '@nestjs/microservices';
-import { GetSchedulesByConditionsDTO } from 'src/dtos/get-schedules-by-conds.dto';
-import { TrainDTO } from 'src/dtos/train.dto';
-import { UpdateTrainDTO } from 'src/dtos/update-train.dto';
-import { JourneysService } from 'src/journeys/journeys.service';
-import { SchedulesService } from 'src/schedules/schedules.service';
+import { GetSchedulesByConditionsDTO } from '../dtos/get-schedules-by-conds.dto';
+import { TrainDTO } from '../dtos/train.dto';
+import { UpdateTrainDTO } from '../dtos/update-train.dto';
+import { JourneysService } from '../journeys/journeys.service';
+import { SchedulesService } from '../schedules/schedules.service';
 import { TrainService } from './train.service';
 @Controller('Trains')
 export class TrainController {

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseError, QueryTypes, Sequelize } from 'sequelize';
-import { TrainDTO } from 'src/dtos/train.dto';
-import { UpdateTrainDTO } from 'src/dtos/update-train.dto';
+import { TrainDTO } from '../dtos/train.dto';
+import { UpdateTrainDTO } from '../dtos/update-train.dto';
 import { Train } from '../models/train.model';
 
 @Injectable()

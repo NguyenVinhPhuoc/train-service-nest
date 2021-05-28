@@ -5,7 +5,7 @@ import {
   Payload,
   RmqContext,
 } from '@nestjs/microservices';
-import { RegisterJourneyDTO } from 'src/dtos/journey.dto';
+import { RegisterJourneyDTO } from '../dtos/journey.dto';
 import { JourneysService } from './journeys.service';
 
 @Controller('journeys')
