@@ -28,8 +28,6 @@ export class SchedulesService {
           model: Schedule,
         },
       );
-      console.log(schedules[0]);
-
       return schedules[0];
     } catch (error) {
       this.logger.error(error.message);
@@ -136,10 +134,10 @@ export class SchedulesService {
         'SP_BookTrain @scheduleDetailId=:scheduleDetailId, @numberOfTickets=:numberOfTickets',
         {
           type: QueryTypes.SELECT,
+          raw: true,
           replacements: {
             scheduleDetailId: bookTrainDto.scheduleDetailId,
             numberOfTickets: bookTrainDto.numberOfTickets,
-            raw: true,
           },
         },
       );
@@ -156,10 +154,10 @@ export class SchedulesService {
         'SP_RevokeTickets @scheduleDetailId=:scheduleDetailId, @numberOfTickets=:numberOfTickets',
         {
           type: QueryTypes.SELECT,
+          raw: true,
           replacements: {
             scheduleDetailId: bookTrainDto.scheduleDetailId,
             numberOfTickets: bookTrainDto.numberOfTickets,
-            raw: true,
           },
         },
       );
