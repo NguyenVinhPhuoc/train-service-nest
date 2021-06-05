@@ -139,9 +139,10 @@ export class SchedulesService {
             scheduleDetailId: bookTrainDto.scheduleDetailId,
             numberOfTickets: bookTrainDto.numberOfTickets,
           },
+          raw: true,
         },
       );
-      return isBookable;
+      return isBookable[0]['success'];
     } catch (error) {
       this.logger.error(error.message);
       throw new DatabaseError(error);
@@ -159,9 +160,10 @@ export class SchedulesService {
             scheduleDetailId: bookTrainDto.scheduleDetailId,
             numberOfTickets: bookTrainDto.numberOfTickets,
           },
+          raw: true,
         },
       );
-      return cancelBook;
+      return cancelBook[0]['success'];
     } catch (error) {
       this.logger.error(error.message);
       throw new DatabaseError(error);

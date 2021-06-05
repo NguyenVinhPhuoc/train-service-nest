@@ -75,7 +75,7 @@ export class SchedulesController {
       const schedules = await this.schedulesService.getSchedulesByConditions(
         getSchedulesByConditionsDTO,
       );
-      return { schedules };
+      return schedules;
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
