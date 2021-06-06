@@ -82,6 +82,7 @@ export class TrainController {
           );
           const options = await this.schedulesService.getScheduleDetailsBySchedule(
             schedule.scheduleId,
+            getSchedulesByConditionsDTO.pickUpTime,
           );
           return { ...schedule, train, stations, options };
         }),

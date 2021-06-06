@@ -109,26 +109,16 @@ export class SchedulesService {
     }
   }
 
-  async getScheduleDetailsBySchedule(scheduleId: string, pickUpTime?: string) {
+  async getScheduleDetailsBySchedule(
+    scheduleId: string,
+    pickUpTime: string | null = null,
+  ) {
     try {
-      if (pickUpTime === null) {
-        const scheduleDetails = await this.sequelize.query(
-          'SP_GetScheduleDetailsBySchedule @scheduleId=:scheduleId',
-          {
-            type: QueryTypes.SELECT,
-            replacements: { scheduleId },
-            raw: true,
-            mapToModel: true,
-            model: ScheduleDetails,
-          },
-        );
-        return scheduleDetails;
-      }
       const scheduleDetails = await this.sequelize.query(
         'SP_GetScheduleDetailsBySchedule @scheduleId=:scheduleId, @pickUpTime=:pickUpTime',
         {
           type: QueryTypes.SELECT,
-          replacements: { scheduleId, pickUpTime },
+          replacements: { scheduleId: scheduleId, pickUpTime: pickUpTime },
           raw: true,
           mapToModel: true,
           model: ScheduleDetails,
