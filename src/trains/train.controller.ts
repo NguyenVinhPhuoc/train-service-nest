@@ -117,14 +117,14 @@ export class TrainController {
 
   @MessagePattern('unregister_train')
   async unregisterTrain(
-    @Payload() trainId: string,
+    @Payload() vehicleId: string,
     @Ctx() context: RmqContext,
   ) {
     const channel = context.getChannelRef();
     const originalMessage = context.getMessage();
     try {
-      const train = this.trainService.unregisterTrain(trainId);
-      return { vehicle: train };
+      const result = await this.trainService.unregisterTrain(vehicleId);
+      return result;
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);

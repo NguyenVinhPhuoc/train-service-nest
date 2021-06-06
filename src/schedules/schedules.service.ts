@@ -28,8 +28,6 @@ export class SchedulesService {
           model: Schedule,
         },
       );
-      console.log(schedules[0]);
-
       return schedules[0];
     } catch (error) {
       this.logger.error(error.message);

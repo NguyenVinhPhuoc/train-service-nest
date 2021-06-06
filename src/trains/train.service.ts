@@ -113,7 +113,7 @@ export class TrainService {
           raw: true,
         },
       );
-      return train;
+      return train[0]['canBeUnregistered'];
     } catch (error) {
       this.logger.error(error.message);
       throw DatabaseError;
