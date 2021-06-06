@@ -134,6 +134,7 @@ export class SchedulesService {
         'SP_BookTrain @scheduleDetailId=:scheduleDetailId, @numberOfTickets=:numberOfTickets',
         {
           type: QueryTypes.SELECT,
+          raw: true,
           replacements: {
             scheduleDetailId: bookTrainDto.scheduleDetailId,
             numberOfTickets: bookTrainDto.numberOfTickets,
@@ -154,6 +155,7 @@ export class SchedulesService {
         'SP_RevokeTickets @scheduleDetailId=:scheduleDetailId, @numberOfTickets=:numberOfTickets',
         {
           type: QueryTypes.SELECT,
+          raw: true,
           replacements: {
             scheduleDetailId: bookTrainDto.scheduleDetailId,
             numberOfTickets: bookTrainDto.numberOfTickets,
