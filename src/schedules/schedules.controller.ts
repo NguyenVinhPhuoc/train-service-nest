@@ -4,6 +4,7 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  Patch,
 } from '@nestjs/common';
 import {
   Ctx,

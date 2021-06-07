@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Body, Delete, Injectable, Logger, Patch } from '@nestjs/common';
 import { DatabaseError, QueryTypes, Sequelize } from 'sequelize';
 import { AddScheduleDTO } from '../dtos/add-schedule.dto';
 import { BookTrainDto } from '../dtos/create-book.dtos';
@@ -151,7 +151,7 @@ export class SchedulesService {
     }
   }
 
-  async cancelBook(bookTrainDto: BookTrainDto) {
+  async cancelBook(@Body() bookTrainDto: BookTrainDto) {
     try {
       const cancelBook = await this.sequelize.query(
         'SP_RevokeTickets @scheduleDetailId=:scheduleDetailId, @numberOfTickets=:numberOfTickets',
