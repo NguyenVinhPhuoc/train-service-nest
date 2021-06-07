@@ -139,7 +139,6 @@ export class SchedulesService {
             scheduleDetailId: bookTrainDto.scheduleDetailId,
             numberOfTickets: bookTrainDto.numberOfTickets,
           },
-          raw: true,
         },
       );
       return isBookable[0]['success'];
@@ -160,7 +159,6 @@ export class SchedulesService {
             scheduleDetailId: bookTrainDto.scheduleDetailId,
             numberOfTickets: bookTrainDto.numberOfTickets,
           },
-          raw: true,
         },
       );
       return cancelBook[0]['success'];
