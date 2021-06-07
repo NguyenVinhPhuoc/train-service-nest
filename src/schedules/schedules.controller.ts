@@ -58,6 +58,7 @@ export class SchedulesController {
       if (!schedule) return { schedule: { ...schedule, details: [] } };
       const details = await this.schedulesService.getScheduleDetailsBySchedule(
         schedule.id,
+        null,
       );
       return { schedule: { ...schedule, details } };
     } catch (error) {
