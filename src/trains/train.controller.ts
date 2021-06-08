@@ -107,7 +107,7 @@ export class TrainController {
       const train = await this.trainService.updateTrainInformation(
         trainUpdateDTO,
       );
-      return { vehicle: train };
+      return train;
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
