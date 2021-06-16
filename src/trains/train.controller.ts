@@ -87,7 +87,7 @@ export class TrainController {
           return { ...schedule, train, stations, options };
         }),
       );
-      return { schedule: schedules };
+      return schedules;
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(error.message, HttpStatus.SERVICE_UNAVAILABLE);
