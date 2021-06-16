@@ -1,11 +1,4 @@
-import {
-  Controller,
-  HttpException,
-  HttpStatus,
-  Logger,
-  Patch,
-  Query,
-} from '@nestjs/common';
+import { Controller, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import {
   Ctx,
   MessagePattern,
